@@ -127,4 +127,5 @@ def api_meta():
     })
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    # Changed port to 5001 to avoid conflicts with macOS AirPlay (which uses 5000)
+    app.run(host='0.0.0.0', port=5001)
