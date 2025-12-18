@@ -3,31 +3,27 @@ name: DevSecOps Pipeline
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 
 jobs:
   build-and-secure:
     runs-on: ubuntu-latest
-
     steps:
-      # 1. Download your code from the repository
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # 2. Build the Docker image from your 'app' folder
+      # This finds the exact path to your Dockerfile automatically
       - name: Build Docker Image
         run: |
-          docker build -t my-secure-app:${{ github.sha }} ./app
+          DOCKERFILE_PATH=$(find . -name "Dockerfile" | head -n 1)
+          CONTEXT_DIR=$(dirname "$DOCKERFILE_PATH")
+          echo "Found Dockerfile at: $DOCKERFILE_PATH"
+          echo "Using Context Directory: $CONTEXT_DIR"
+          docker build -t my-secure-app:${{ github.sha }} -f "$DOCKERFILE_PATH" "$CONTEXT_DIR"
 
-      # 3. Run the Trivy Security Scanner
-      # This is the security gate that blocks insecure code
-      - name: Run Trivy Vulnerability Scanner
+      - name: Run Trivy Security Scan
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: 'my-secure-app:${{ github.sha }}'
           format: 'table'
-          exit-code: '1' # This tells GitHub to 'fail' the build if issues are found
-          ignore-unfixed: true
-          vuln-type: 'os,library'
+          exit-code: '1'
           severity: 'CRITICAL,HIGH'
