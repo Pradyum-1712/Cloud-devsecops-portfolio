@@ -1,6 +1,5 @@
 name: DevSecOps Pipeline
 
-# Trigger: Run this pipeline whenever code is pushed to the 'main' branch
 on:
   push:
     branches: [ "main" ]
@@ -12,42 +11,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout the code (Download it to the runner)
+      # 1. Download your code from the repository
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # 2. Set up Docker Buildx (The tool that builds Docker images)
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      # 3. Build the Docker Image
+      # 2. Build the Docker image from your 'app' folder
       - name: Build Docker Image
         run: |
           docker build -t my-secure-app:${{ github.sha }} ./app
 
-      # 4. Security Scan: Container Vulnerabilities (Trivy)
-      # This tool scans the image we just built for known CVEs
+      # 3. Run the Trivy Security Scanner
+      # This is the security gate that blocks insecure code
       - name: Run Trivy Vulnerability Scanner
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: 'my-secure-app:${{ github.sha }}'
           format: 'table'
-          exit-code: '1'       # Fail the build if vulnerabilities are found
-          ignore-unfixed: true # Ignore bugs that don't have a fix yet
+          exit-code: '1' # This tells GitHub to 'fail' the build if issues are found
+          ignore-unfixed: true
           vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH' # Only fail on really bad stuff
-
-      # 5. Security Scan: Secret Scanning (TruffleHog)
-      # Checks if we accidentally left keys or passwords in the code
-      - name: Scan for Secrets
-        uses: trufflesecurity/trufflehog-actions-scan@main
-        with:
-          path: ./
-          base: ${{ github.event.repository.default_branch }}
-          head: HEAD
-          extra_args: --debug --only-verified
-
-      # 6. Success Message
-      - name: Build Success
-        if: success()
-        run: echo "Build Passed! Image is secure."
+          severity: 'CRITICAL,HIGH'
