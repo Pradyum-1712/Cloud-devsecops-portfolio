@@ -1,0 +1,24 @@
+Ignore Mac System Files
+
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+Ignore Terraform local state
+
+.terraform/
+*.tfstate
+*.tfstate.backup
+.terraform.lock.hcl
+
+Ignore Python cache
+
+pycache/
+*.py[cod]
+*$py.class
+venv/
+.env
