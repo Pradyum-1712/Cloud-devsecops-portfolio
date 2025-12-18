@@ -1,0 +1,53 @@
+name: DevSecOps Pipeline
+
+# Trigger: Run this pipeline whenever code is pushed to the 'main' branch
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-secure:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout the code (Download it to the runner)
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # 2. Set up Docker Buildx (The tool that builds Docker images)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      # 3. Build the Docker Image
+      - name: Build Docker Image
+        run: |
+          docker build -t my-secure-app:${{ github.sha }} ./app
+
+      # 4. Security Scan: Container Vulnerabilities (Trivy)
+      # This tool scans the image we just built for known CVEs
+      - name: Run Trivy Vulnerability Scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'my-secure-app:${{ github.sha }}'
+          format: 'table'
+          exit-code: '1'       # Fail the build if vulnerabilities are found
+          ignore-unfixed: true # Ignore bugs that don't have a fix yet
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH' # Only fail on really bad stuff
+
+      # 5. Security Scan: Secret Scanning (TruffleHog)
+      # Checks if we accidentally left keys or passwords in the code
+      - name: Scan for Secrets
+        uses: trufflesecurity/trufflehog-actions-scan@main
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+          extra_args: --debug --only-verified
+
+      # 6. Success Message
+      - name: Build Success
+        if: success()
+        run: echo "Build Passed! Image is secure."
