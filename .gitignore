@@ -8,17 +8,68 @@ Ignore Mac System Files
 ehthumbs.db
 Thumbs.db
 
-Ignore Terraform local state
+Ignore Windows System Files
+
+desktop.ini
+$RECYCLE.BIN/
+
+Ignore Terraform local state and modules
 
 .terraform/
 *.tfstate
 *.tfstate.backup
 .terraform.lock.hcl
+*.tfvars
+*.tfvars.json
 
-Ignore Python cache
+Ignore Python cache and virtual environments
 
 pycache/
 *.py[cod]
 *$py.class
 venv/
+env/
 .env
+.venv/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+Ignore IDE settings
+
+.vscode/
+.idea/
+*.swp
+*.swo
+
+Ignore Cloud CLI and local credentials (CRITICAL for Security)
+
+.aws/
+.azure/
+credentials
+*.pem
+*.key
+*.pub
+
+Ignore Docker local logs
+
+logs
+.log
+npm-debug.log
+yarn-debug.log*
+yarn-error.log*
+docker-compose.override.yml
