@@ -20,32 +20,22 @@ Configuration Management: Implemented professional .gitignore standards to preve
 
 🛠️ Technology Stack
 
-Category
+1) Microsoft Azure (App Services, Resource Groups)
 
-Tools & Technologies
+2) Terraform (HCL)
 
-Cloud Platform
+3) DevOps / CI/CD
 
-Microsoft Azure (App Services, Resource Groups)
+4) GitHub Actions, Docker
 
-Infrastructure
+5) Security Audit
 
-Terraform (HCL)
-
-DevOps / CI/CD
-
-GitHub Actions, Docker
-
-Security Audit
-
-Trivy Vulnerability Scanner
+6) Trivy Vulnerability Scanner
 
 Backend
-
 Python 3.12, Flask
 
 Frontend
-
 Tailwind CSS (Responsive Dashboard)
 
 🚦 The DevSecOps Lifecycle
